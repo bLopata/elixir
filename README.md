@@ -43,6 +43,7 @@ Calling `is_function/2` with the name and arity of the function will return a bo
 ### Capture function (&)
 The capture function in Elixir is a shortcut which can accomplish one of two things: 
   * capture a function with a given name and arity from a module which is a handy shorthand to bind a function from a built in module to a local name
+  * or it be used to create anonymous functions
   ```elixir
 sayHello = &(IO.puts/1)
 sayHello.("hi there) # binds the IO.puts() method to a local name
@@ -61,12 +62,12 @@ defmodule Issues.TableFormatter do
 end
 ```
 In this example, both functions are in the same module, so you do not need to specify the module name as with `IO.puts()`.
-  * the capture function can also be used to create anonymous functions, i.e.:
+
 ```elixir
 add_one = &(1 + 1)
 add_one.(1) # 2
 ```
-The above can be written out more formally as:
+This is an example of using capture to create an anonymous function. The above can be written out more formally as:
 ```elixir
 add_one = fn x -> x + 1 end
 add_one.(1) # 2

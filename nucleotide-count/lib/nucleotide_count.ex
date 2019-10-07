@@ -15,7 +15,7 @@ defmodule NucleotideCount do
   @spec count([char], char) :: non_neg_integer
   def count(strand, nucleotide) do
     f = nucleotide
-    if checkLength(length(strand)) == 0, do: checkLength(length(strand)), else: return = Enum.count(strand, fn item -> item == nucleotide end)
+    if checkLength(length(strand)) == 0, do: checkLength(length(strand)), else: return = Enum.count(strand, &(&1 = nucleotide))
   end
 
  def checkLength(len) do

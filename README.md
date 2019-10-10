@@ -1,5 +1,9 @@
 # Elixir
 
+## Erlang, Elixir, and OTP
+
+[Elixir](https://elixir-lang.org/) is a dynamic, functional programming language designed for building scalable and highly available applications. Elixir leverages the Erlang VM the lastest version of which uses BEAM (aka the new BEAM) Bogdan/Björn's Erlang Abstract Machine which was developed by two engineers who worked at Ericcson. BEAM is the virtual machine at the core of the Open Transfer Protocol (OTP) which is in turn part of the Erlang Run-Time System (ERTS) which compiles Erlang/Elixir to bytecode to be executed on the BEAM.
+
 ## [Basic types in Elixir](https://elixir-lang.org/getting-started/basic-types.html "Elixir Lang - Basic Types")
 
 ```elixir

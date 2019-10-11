@@ -187,7 +187,7 @@ defmodule Params do
         "You said #{p2} with a list"
     end
 
-    def func(p1, p2), do: "You passed #{p1} and #{p2}
+    def func(p1, p2), do: "You passed #{p1} and #{p2}"
 
 end
 ```

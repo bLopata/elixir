@@ -23,7 +23,7 @@ true       # boolean
 
 The heirarchy of types in elixir is as follows:
 
-`number < atom < reference < function < port < pid < tuple < map < list < bitstring`
+<pre><code>number < atom < reference < function < port < pid < tuple < map < list < bitstring</pre></code>
 
 ```elixir
 iex> 1 < :an_atom
@@ -34,11 +34,47 @@ Data types in Elixir are immutable, and any operation performed on a list, for e
 
 ## [Operators](https://hexdocs.pm/elixir/1.6.4/operators.html#content "Hex Docs - Operators")
 
+### Comparison operators
+
+<code>
+<ul>
+<li>==  # equality
+<li>!=  # inequality
+<li>=== # strict equality
+<li>!== # strict inequality
+<li>>   # greater than
+<li><   # less than
+<li><=  # less than equal to
+<li>>=  # greater than equal to
+</code>
+
+### Boolean and negation operators
+
+<code>
+<li>or
+<li>and
+<li>not
+<li>!
+</code>
+
+### Arithmetic operators
+
+<code>
+<li>+ 
+<li>- 
+<li>*
+<li>/
+</code>
+
+Join operators
+<> and ++, as long as the left side is a literal
+The in operator
+Membership in a collection or range
+
 ### Unused operators
 
-It is possible to bind allowable, unused operators as well as used operators in Elixir to a custom definition.
+The following are unused operators which are valid in Elixir
 
-<ul>
 <li>|
 <li>|||
 <li>&&&
@@ -53,7 +89,7 @@ It is possible to bind allowable, unused operators as well as used operators in 
 <li>^^^
 <li>~~~
 
-</ul>
+It is possible to bind these operators as well as rebind used operators in Elixir to a custom definition.
 
 ```elixir
 defmodule WrongMath do
@@ -69,9 +105,7 @@ iex> import WrongMath
 iex> import Kernel, except: [+: 2]
 ```
 
-## Shell
-
-To invoke the Elixir shell, type `iex` into the console.
+## Modules
 
 ## Functions
 
@@ -82,6 +116,8 @@ The shorthand for a function representation is the function named, followed by a
 ```elixir
 IO.puts/1
 ```
+
+### Anonymous Functions
 
 Anonymous functions are also permitted in Elixir. Anonymous functions are delimeted by the keywords `fn` and `end`, e.g.
 
@@ -95,6 +131,66 @@ iex> add.(1, 2)
 The arguments are listed to the left of the arrow operator and the code to be executed to the right. The anonymous function is stored in the variable `add`. Note the dot (`.`) is required to call an anonymous function. The dot defines the difference between an anonymous function matched to a variable `add` and a named function `add/2`.
 
 Calling `is_function/2` with the name and arity of the function will return a boolean for the existence of the named function.
+
+### Default Parameters
+
+When defining a function, you can specify a default value to any of the parameters by using
+
+```
+param \\ value
+```
+
+Elixir compares the number of given parameters in a function call to the number of required parameters (from left to right) and will override default value if the number of parameters in a function call is greater than the number of required parameters.
+
+```elixir
+@doc"""
+Erroneous functions with multiple heads having default parameters.
+"""
+defmodule Params do
+    def func(p1, p2 \\ 123), do: IO.inspect [p1, p2]
+
+    def func(p1, 99), do: IO.puts "you said 99"
+end
+```
+
+Results in the following error:
+
+```
+warning: definitions with multiple clauses and default values require a header. Instead of:
+
+    def foo(:first_clause, b \\ :default) do ... end
+    def foo(:second_clause, b) do ... end
+
+one should write:
+
+    def foo(a, b \\ :default)
+    def foo(:first_clause, b) do ... end
+    def foo(:second_clause, b) do ... end
+
+def func/2 has multiple clauses and defines defaults in one or more clauses
+  func_module.exs:4
+
+warning: variable "p1" is unused
+  func_module.exs:4
+
+warning: this clause cannot match because a previous clause at line 2 always matches
+```
+
+Instead, you should add a function head with no body which contains the default paramters, followed by function(s) using regular parameters.
+
+```elixir
+defmodule Params do
+
+    def func(p1, p2 \\ 123)
+
+    def func(p1, p2) when is_list(p1) do
+        "You said #{p2} with a list"
+    end
+
+    def func(p1, p2), do: "You passed #{p1} and #{p2}
+
+end
+```
 
 ### Capture function (&)
 

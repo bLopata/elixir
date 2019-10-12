@@ -192,6 +192,61 @@ defmodule Params do
 end
 ```
 
+### Pattern Matching in Function Calls
+
+Pattern matching is useful in anonymous functions to bind the parameters to the passed arguments (see [fizzbuzz.ex](Exercises/Programming_Elixir_1.6/5_Anonymous_Functions/fizz_buzz.ex)), and the same is true for named functions, but the implementation is slightly different. We write what is essentially a `case` or `switch` statement, with multiple function definitions (or multiple clauses of the same function definition) which have different parameter lists and bodies.
+
+Take the following
+
+```elixir
+defmodule Factorial do
+  def of(0), do: 1
+  def of(n), do: n * of(n-1)
+end
+```
+
+When you called the named function `Factorial.of(n)`, Elixir pattern matches the given parameter with the parameter list of the first function. If that pattern match fails, it proceeds to the next clause with the same arity, and so on. 
+
+The known clause (0! = 1) is referred to as the **anchor**. Calling `Factorial.of(2)` tries to match the first clause (n = 2 != 0). Then it binds 2 to n, and evaluates the body of the function, which calls `Factorial.of(1)`, which in turn calls the body of the function with n = 1, which finally calls the anchor clause. Elixir then unwinds the stack, and performs all the multiplication and returns the result.
+
+(**Note: since the functions are called top-down, the anchor clause must be first. Reversing the function calls in the above example will result in a compile error.)
+
+### Guard Clauses
+
+Expanding on the concept of pattern matching in functions, Guard Clauses allow for type or value checking for function calls.
+
+```elixir
+defmodule Guard do
+ def what_is(x) when is_number(x), do: IO.puts "#{x} is a number"
+ def what_is(x) when is_atom(x), do: IO.puts "#{x} is a atom"
+ def what_is(x) when is_list(x), do: IO.puts "#{x} is a list"
+end
+```
+
+In our Factorial example above, we can add a Guard clause to protect against a negative integer, i.e.
+```elixir
+defmodule Factorial do
+  def of(0), do: 1
+  def of(n) when is_integer(n) and n > 0 do
+    n * of(n-1)
+  end
+end
+```
+
+Writing the guard clause differently, i.e. 
+
+```elixir
+def of(n) do
+  if n < 0 do
+    raise "factorial called on negative number"
+  else
+  n * of(n-1)
+  end
+end
+```
+
+defines the `Factorial.of()` method for all values of n, however the first implementation explicitly defines the domain of our function as non-negative integers.
+
 ### Capture function (&)
 
 The capture function in Elixir is a shortcut which can accomplish one of two things:

@@ -176,6 +176,28 @@ alias My.Other.Module.{Parser, Runner}
 
 ### The require Directive
 
+The `require` directive is used when you want to access macros defined within another module. Macros allow for specific definitions of Elixir syntax to inject code. Macros will be discussed further in Chapter 22.
+
+## Module Attributes
+
+Module attributes are associated metadata defined at the top level of a module with
+```elixir
+@name value
+```
+
+Module attributes may be accessed by functions inside the same module and the value is whatever value that attribute had when the function was defined.
+
+```elixir
+defmodule ModuleAttribute do
+  @coder "Ben Lopata"
+  def print_name, do @coder
+end
+IO.puts "This is code written by #{ModuleAttribute.print_name}"
+```
+
+### Module Names in Elixir
+
+Module names in Elixir are atoms. When a variable name has an uppercase first letter, Elixir converts it to an atom and prepends it with `Elixir`. So the `String` or `IO` modules, for example, are in fact `Elixir.String` and `Elixir.IO`
 # [Functions](https://elixir-lang.org/getting-started/modules-and-functions.html#named-functions)
 
 Functions in Elixir are defined by their name and their arity (number of input arguments).

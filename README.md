@@ -2,8 +2,6 @@
 
 [Elixir](https://elixir-lang.org/) is a dynamic, functional programming language designed for building scalable and highly available applications. Elixir leverages the Erlang VM the lastest version of which uses [BEAM](https://en.wikipedia.org/wiki/BEAM_ "Erlang virtual machine") (aka the new BEAM)- Bogdan/Björn's Erlang Abstract Machine - which was developed by two engineers who worked at Ericcson. BEAM is the virtual machine at the core of the Open Telecom Protocol (OTP) which is in turn part of the Erlang Run-Time System (ERTS) which compiles Erlang/Elixir to bytecode to be executed on the BEAM.
 
----
-
 # [Basic types in Elixir](https://elixir-lang.org/getting-started/basic-types.html "Elixir Lang - Basic Types")
 
 ```elixir
@@ -135,9 +133,46 @@ Note that all modules are defined at the top level, Elixir simply prepends the o
 
 ## Directives in Modules
 
+Elixir has three directives for working with modules. These directives are executed at compile-time and are lexically scoped; that is they are only defined within the scope in which they are declared.
+
 ### The Import Directive
 
+The `import` directive brings another module's functions and or macros into the current scope. This can serve to cut down repeated `ModuleName` prefixes to a function.
+
+```elixir
+defmodule Example do
+  # so this call to 'List.flatten/1'
+  def func1 do
+    List.flatten[1,[2,3],4]
+  end
+  def func 2 do
+    # becomes simply 'flatten/1'
+    import list, only: [flatten: 1]
+    flatten [5,[6,7],8]
+  end
+```
+
 ### The alias Directive
+
+The `alias` directive allows for renaming a module for conciseness.
+
+```elixir
+defmodule Example do
+  def compile_and_go(source) do
+    alias My.Other.Module.Parser, as: Parser
+    alias My.Other.Module.Runner
+    source
+    |> Parser.parse()
+    |> Runner.execute()
+  end
+end
+```
+
+Note the second `alias` directive leaves off `,as: Parser` because the alias defaults to the last part of the module name. An even more concise method would be
+
+```elixir
+alias My.Other.Module.{Parser, Runner}
+```
 
 ### The require Directive
 
@@ -151,33 +186,24 @@ The shorthand for a function representation is the function named, followed by a
 IO.puts/1
 ```
 
-## Anonymous Functions
+## Pattern Matching in Function Calls
 
-Anonymous functions are also permitted in Elixir. Anonymous functions are delimeted by the keywords `fn` and `end`, e.g.
+Pattern matching in function calls is performed by writing what is essentially a `case` or `switch` statement, with multiple function definitions (or multiple clauses) which have different parameter lists and bodies.
 
-```elixir
-iex> add = fn a, b -> a + b end
-#Function<12.71889879/2 in :erl_eval.expr/5>
-iex> add.(1, 2)
-3
-```
-
-The arguments are listed to the left of the arrow operator and the code to be executed to the right. The anonymous function is stored in the variable `add`. Note the dot (`.`) is required to call an anonymous function. The dot defines the difference between an anonymous function matched to a variable `add` and a named function `add/2`.
-
-Anonymous functions can use pattern matching to define a result for multiple bodies, depending on the type and value of the arguments passed. For instance, error checking in Elixir may be implemented as:
+Take the following
 
 ```elixir
-anonymous_function = fn
-  {:ok, x} -> "First line: #{IO.read(x, :line)}"
-  {_, error} -> "Error: #{:file.format_error(error)}"
+defmodule Factorial do
+  def of(0), do: 1
+  def of(n), do: n * of(n-1)
 end
 ```
 
-Elixir checks for a match against the clauses from top to bottom. If the result of calling `anonymous_function.()` is a tuple `{:ok, x}` the file is opened and the first line is outputted in the terminal. The second clause introduces the wildcard `_` to bind any value in first term of the tuple, provided the second term is `:error`.
+When you called the named function `Factorial.of(n)`, Elixir pattern matches the given parameter with the parameter list of the first function. If that pattern match fails, it proceeds to the next clause with the same arity, and so on.
 
-For more detail on pattern matching in anonymous functions, see the [fizz_buzz.ex](Exercises\Programming_Elixir_1.6\5_Anonymous_Functions\fizz_buzz.ex) example from the chapter.
+The known clause (0! = 1) is referred to as the **anchor**. Calling `Factorial.of(2)` tries to match the first clause (n = 2 != 0). Then it binds 2 to n, and evaluates the body of the function, which calls `Factorial.of(1)`, which in turn calls the body of the function with n = 1, which finally calls the anchor clause. Elixir then unwinds the stack, and performs all the multiplication and returns the result.
 
-Calling `is_function/2` with the name and arity of the function will return a boolean for the existence of the named function.
+(_Note: since the functions are called top-down, the anchor clause must be first. Reversing the function calls in the above example will result in a compile error._)
 
 ## Private Functions
 
@@ -249,25 +275,6 @@ defmodule Params do
 end
 ```
 
-## Pattern Matching in Function Calls
-
-Pattern matching is useful in anonymous functions to bind the parameters to the passed arguments (see [fizzbuzz.ex](Exercises/Programming_Elixir_1.6/5_Anonymous_Functions/fizz_buzz.ex)), and the same is true for named functions, but the implementation is slightly different. We write what is essentially a `case` or `switch` statement, with multiple function definitions (or multiple clauses of the same function definition) which have different parameter lists and bodies.
-
-Take the following
-
-```elixir
-defmodule Factorial do
-  def of(0), do: 1
-  def of(n), do: n * of(n-1)
-end
-```
-
-When you called the named function `Factorial.of(n)`, Elixir pattern matches the given parameter with the parameter list of the first function. If that pattern match fails, it proceeds to the next clause with the same arity, and so on.
-
-The known clause (0! = 1) is referred to as the **anchor**. Calling `Factorial.of(2)` tries to match the first clause (n = 2 != 0). Then it binds 2 to n, and evaluates the body of the function, which calls `Factorial.of(1)`, which in turn calls the body of the function with n = 1, which finally calls the anchor clause. Elixir then unwinds the stack, and performs all the multiplication and returns the result.
-
-(_Note: since the functions are called top-down, the anchor clause must be first. Reversing the function calls in the above example will result in a compile error._)
-
 ## Guard Clauses
 
 Expanding on the concept of pattern matching in functions, Guard Clauses allow for type or value checking for function calls.
@@ -304,6 +311,34 @@ end
 ```
 
 defines the `Factorial.of()` method for all values of n, however the first implementation explicitly defines the domain of our function as non-negative integers.
+
+## Anonymous Functions
+
+Anonymous functions are also permitted in Elixir. Anonymous functions are delimeted by the keywords `fn` and `end`, e.g.
+
+```elixir
+iex> add = fn a, b -> a + b end
+#Function<12.71889879/2 in :erl_eval.expr/5>
+iex> add.(1, 2)
+3
+```
+
+The arguments are listed to the left of the arrow operator and the code to be executed to the right. The anonymous function is stored in the variable `add`. Note the dot (`.`) is required to call an anonymous function. The dot defines the difference between an anonymous function matched to a variable `add` and a named function `add/2`.
+
+Anonymous functions can use pattern matching to define a result for multiple bodies, depending on the type and value of the arguments passed. For instance, error checking in Elixir may be implemented as:
+
+```elixir
+anonymous_function = fn
+  {:ok, x} -> "First line: #{IO.read(x, :line)}"
+  {_, error} -> "Error: #{:file.format_error(error)}"
+end
+```
+
+Elixir checks for a match against the clauses from top to bottom. If the result of calling `anonymous_function.()` is a tuple `{:ok, x}` the file is opened and the first line is outputted in the terminal. The second clause introduces the wildcard `_` to bind any value in first term of the tuple, provided the second term is `:error`.
+
+For more detail on pattern matching in anonymous functions, see the [fizz_buzz.ex](Exercises\Programming_Elixir_1.6\5_Anonymous_Functions\fizz_buzz.ex) example from the chapter.
+
+Calling `is_function/2` with the name and arity of the function will return a boolean for the existence of the named function.
 
 ## [Capture function (&)](https://elixir-lang.org/getting-started/modules-and-functions.html#function-capturing "Function Capturing")
 
@@ -362,4 +397,41 @@ return_tuple.(1, 2) # {1, 2}
 
 ![Capture operator in action](/docs/images/capture+operator.jpg)
 
-## Pipe Operator (|>)
+## [Pipe Operator (|>)](https://elixir-lang.org/getting-started/enumerables-and-streams.html#the-pipe-operator "Pipe Operator")
+
+The |> operator takes the result of the expression to the left of the operator and passes it as the first parameter into the function to the right of the operator, e.g.
+
+```
+people = DB.find_customers
+orders = Orders.for_customers(people)
+tax = sales_tax(orders, 2018)
+filing = prepare_filing(tax)
+```
+
+Which is a more legible version of
+
+```
+prepare_filing(sales_tax(Orders.for_customers(DB.find_customers), 2018))
+```
+
+Can be written in Elixir as
+
+```elixir
+filing = DB.find_customers
+  |> Orders.for_customers
+  |> sales_tax(2018)
+  |> prepare_filing
+```
+
+`val |> f(a,b)` is the same as calling `f(val, a, b)`.
+
+You can also chain pipe operations on a single line
+
+```elixir
+iex> (1..10) |> Enum.map(&(&1*&1)) |> Enum.filter(&(&1 < 40))
+[1, 4, 9, 16, 25, 36]
+```
+
+Note: when using the pipe operator, function parameters need to be wrapped in parentheses.
+
+The pipe operator provides an explicit way to transform data - one of the primary benefits of Elixir and FP in general.

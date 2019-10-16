@@ -1,6 +1,8 @@
-# Erlang, Elixir, and OTP
+# Background on Erlang, Elixir, and OTP
 
 [Elixir](https://elixir-lang.org/) is a dynamic, functional programming language designed for building scalable and highly available applications. Elixir leverages the Erlang VM the lastest version of which uses [BEAM](https://en.wikipedia.org/wiki/BEAM_ "Erlang virtual machine") (aka the new BEAM)- Bogdan/Björn's Erlang Abstract Machine - which was developed by two engineers who worked at Ericcson. BEAM is the virtual machine at the core of the Open Telecom Protocol (OTP) which is in turn part of the Erlang Run-Time System (ERTS) which compiles Erlang/Elixir to bytecode to be executed on the BEAM.
+
+---
 
 # [Basic types in Elixir](https://elixir-lang.org/getting-started/basic-types.html "Elixir Lang - Basic Types")
 
@@ -28,23 +30,22 @@ iex> 1 < :an_atom
 true
 ```
 
-Data types in Elixir are immutable, and any operation performed on a list, for example, create another list rather than modifying the existing list.
+Following the paradigm of functional languages, data types in Elixir are immutable. Any operation performed on a list, for example, create another list rather than modifying the existing list.
 
 # [Operators](https://hexdocs.pm/elixir/1.6.4/operators.html#content "Hex Docs - Operators")
 
 ## Comparison operators
 
-<code>
-
-<li>==  # equality
-<li>!=  # inequality
-<li>=== # strict equality
-<li>!== # strict inequality
-<li>>   # greater than
-<li><   # less than
-<li><=  # less than equal to
-<li>>=  # greater than equal to
-</code>
+| Operator | Description           |
+| -------- | --------------------- |
+| ==       | equality              |
+| !=       | inequality            |
+| ===      | strict equality       |
+| !==      | strict inequality     |
+| >        | greater than          |
+| <        | less than             |
+| <=       | less than equal to    |
+| >=       | greater than equal to |
 
 ## Boolean and negation operators
 
@@ -64,15 +65,15 @@ Data types in Elixir are immutable, and any operation performed on a list, for e
 <li>/
 </code>
 
-Join operators
-<> and ++, as long as the left side is a literal
-The in operator
-Membership in a collection or range
+Join operators <> and ++, as long as the left side is a literal.
+
+The in operator is used for membership in a collection or range.
 
 ## Unused operators
 
 The following are unused operators which are valid in Elixir
 
+<code>
 <li>|
 <li>|||
 <li>&&&
@@ -86,6 +87,7 @@ The following are unused operators which are valid in Elixir
 <li><|>
 <li>^^^
 <li>~~~
+</code>
 
 It is possible to bind these operators as well as rebind used operators in Elixir to a custom definition.
 
@@ -102,6 +104,8 @@ end
 iex> import WrongMath
 iex> import Kernel, except: [+: 2]
 ```
+
+---
 
 # [Modules](https://elixir-lang.org/getting-started/modules-and-functions.html "Elixir Modules")
 

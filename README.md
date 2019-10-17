@@ -21,7 +21,7 @@ true       # boolean
 
 The heirarchy of types in elixir is as follows:
 
-<pre><code>number < atom < reference < function < port < pid < tuple < map < list < bitstring</pre></code>
+`number < atom < reference < function < port < pid < tuple < map < list < bitstring`
 
 ```elixir
 iex> 1 < :an_atom
@@ -47,21 +47,21 @@ Following the paradigm of functional languages, data types in Elixir are immutab
 
 ### Boolean and negation operators
 
-<code>
-<li>or
-<li>and
-<li>not
-<li>!
-</code>
+```elixir
+* or
+* and
+* not
+* !
+```
 
 ### Arithmetic operators
 
-<code>
-<li>+ 
-<li>- 
-<li>*
-<li>/
-</code>
+```elixir
+* +
+* -
+* *
+* /
+```
 
 Join operators <> and ++, as long as the left side is a literal.
 
@@ -71,21 +71,21 @@ The in operator is used for membership in a collection or range.
 
 The following are unused operators which are valid in Elixir
 
-<code>
-<li>|
-<li>|||
-<li>&&&
-<li><<<
-<li>>>>
-<li>~>>
-<li><<~
-<li>~>
-<li><~
-<li><~>
-<li><|>
-<li>^^^
-<li>~~~
-</code>
+```elixir
+* |
+* |||
+* &&&
+* <<<
+* >>>
+* ~>>
+* <<~
+* ~>
+* <~
+* <~>
+* <|>
+* ^^^
+* ~~~
+```
 
 It is possible to bind these operators as well as rebind used operators in Elixir to a custom definition.
 

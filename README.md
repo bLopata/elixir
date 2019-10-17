@@ -490,23 +490,59 @@ In this example, calling `MyList.len([1, 2, 3, 4, 5])` first matches `head` to t
 
 Elixir also tells us that the value of `head` is not used in the function call, which we can fix by prepending an `_` to the variable name to tell the compiler that that variable will not be used in the function body (`_head`).
 
-We can expand this to return the squares of each element in a list, summing a list, or applying an arbitrary function to a list (creating a map function)
+We can expand this to return the squares of each element in a list or applying an arbitrary function to a list (creating a map function):
 
 ```elixir
 def map([], _func), do: []
 def map([ head | tail ], func), do: [ func.(head) | map(tail, func) ]
 ```
 
-Invoking this and passing a list and some function as a second argument evaluates the function provided the first element of the list (`func.(head)`) and then recursively calls the enclosing `map` function on the `tail` of the list.
+Invoking this and passing a list and some function as a second argument evaluates the function provided the first element of the list (`func.(head)`) and then recursively calls the enclosing `map` function on the `tail` of the list. For more information on mapping, see [map.ex](Exercises\Programming_Elixir_1.6\7_Lists_And_Recursion\map.ex).
 
 ```elixir
 iex> MyList.map [1,2,3,4], fn (n) -> n+1 end
 [2, 3, 4, 5]
 ```
 
-The capture operator can be used in this context to create a shorthand for the anonymous function
+The capture operator can be used in this context to create a shorthand for the anonymous function:
 
 ```elixir
 iex> MyList.map [1,2,3,4], &(&1+1)
 [2, 3, 4, 5]
+```
+
+Mapping functions and lists can similarly be applied to return a single value, say the sum of the list:
+
+```elixir
+defmodule MyListReduce do
+  def reduce([], value, _), do: value
+  def reduce([head | tail], value, func) do
+    reduce(tail, func.(head, value), func)
+  end
+end
+```
+
+Passing in the list to this function using the capture operator and `+` returns the sum
+
+```elixir
+iex> MyListReduce.reduce([1, 2, 3, 4], 0, &(&1+&2))
+10
+```
+
+We can also pattern match against more complex list patterns, such as this `Swapper` module which recursively rearranges a list:
+
+```elixir
+defmodule Swapper do
+  def swap([]), do: []
+  def swap([a, b | tail]), do: [b, a | swap(tail)]
+  def swap([_]), do: raise "You can't swap a list with an odd number of elements."
+end
+
+IO.puts Swapper.swap [1, 2, 3, 4, 5, 6] # => [2, 1, 4, 3, 6, 5]
+```
+
+Or pattern matching for a specific element in a list of lists:
+
+```elixir
+
 ```

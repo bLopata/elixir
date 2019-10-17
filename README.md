@@ -459,3 +459,54 @@ iex> (1..10) |> Enum.map(&(&1*&1)) |> Enum.filter(&(&1 < 40))
 Note: when using the pipe operator, function parameters need to be wrapped in parentheses.
 
 The pipe operator provides an explicit way to transform data - one of the primary benefits of Elixir and FP in general.
+
+## Lists And Recursion
+
+Lists in Elixir, for example `[1, 2, 3, 4, 5]` can be represented (and pattern matched or asserted to) `[a, b, c, d, e]` or `[head | tail]`, e.g.
+
+```elixir
+iex> [a, b, c] = [1, 2, 3]
+[1, 2, 3]
+iex> a == 1 and b == 2 and c == 3
+true
+iex> [head | tail] = [1, 2, 3, 4, 5]
+[1, 2, 3, 4, 5]
+iex> head
+1
+iex> tail
+[2, 3, 4, 5]
+```
+
+This `[head | tail]` syntax can be used to process a list. By definition, the length of an empty list is zero and the length of a non-empty list is 1 + the length of it's tail. Using this definition, we can write a function to return the length of any arbitrary list:
+
+```elixir
+defmodule MyList do
+  def len([]), do: 0
+  def len([head|tail]), do: 1 + len(tail)
+end
+```
+
+In this example, calling `MyList.len([1, 2, 3, 4, 5])` first matches `head` to the first value in the array, `1` and `tail` is matched to the remaining list elements, `[2, 3, 4, 5]`. This function call is repeated recursively, adding 1 each time, until we reach the **anchor case** of an empty list, `MyList.len([])`.
+
+Elixir also tells us that the value of `head` is not used in the function call, which we can fix by prepending an `_` to the variable name to tell the compiler that that variable will not be used in the function body (`_head`).
+
+We can expand this to return the squares of each element in a list, summing a list, or applying an arbitrary function to a list (creating a map function)
+
+```elixir
+def map([], _func), do: []
+def map([ head | tail ], func), do: [ func.(head) | map(tail, func) ]
+```
+
+Invoking this and passing a list and some function as a second argument evaluates the function provided the first element of the list (`func.(head)`) and then recursively calls the enclosing `map` function on the `tail` of the list.
+
+```elixir
+iex> MyList.map [1,2,3,4], fn (n) -> n+1 end
+[2, 3, 4, 5]
+```
+
+The capture operator can be used in this context to create a shorthand for the anonymous function
+
+```elixir
+iex> MyList.map [1,2,3,4], &(&1+1)
+[2, 3, 4, 5]
+```

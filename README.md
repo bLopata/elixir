@@ -460,7 +460,7 @@ Note: when using the pipe operator, function parameters need to be wrapped in pa
 
 The pipe operator provides an explicit way to transform data - one of the primary benefits of Elixir and FP in general.
 
-## Lists And Recursion
+## [Lists And Recursion](https://elixir-lang.org/getting-started/keywords-and-maps.html "Keywords lists and Maps")
 
 Lists in Elixir, for example `[1, 2, 3, 4, 5]` can be represented (and pattern matched or asserted to) `[a, b, c, d, e]` or `[head | tail]`, e.g.
 

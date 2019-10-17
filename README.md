@@ -2,7 +2,7 @@
 
 [Elixir](https://elixir-lang.org/) is a dynamic, functional programming language designed for building scalable and highly available applications. Elixir leverages the Erlang VM the lastest version of which uses [BEAM](https://en.wikipedia.org/wiki/BEAM_ "Erlang virtual machine") (aka the new BEAM)- Bogdan/Björn's Erlang Abstract Machine - which was developed by two engineers who worked at Ericcson. BEAM is the virtual machine at the core of the Open Telecom Protocol (OTP) which is in turn part of the Erlang Run-Time System (ERTS) which compiles Erlang/Elixir to bytecode to be executed on the BEAM.
 
-# [Basic types in Elixir](https://elixir-lang.org/getting-started/basic-types.html "Elixir Lang - Basic Types")
+## [Basic types in Elixir](https://elixir-lang.org/getting-started/basic-types.html "Elixir Lang - Basic Types")
 
 ```elixir
 1          # integer
@@ -30,9 +30,9 @@ true
 
 Following the paradigm of functional languages, data types in Elixir are immutable. Any operation performed on a list, for example, create another list rather than modifying the existing list.
 
-# [Operators](https://hexdocs.pm/elixir/1.6.4/operators.html#content "Hex Docs - Operators")
+## [Operators](https://hexdocs.pm/elixir/1.6.4/operators.html#content "Hex Docs - Operators")
 
-## Comparison operators
+### Comparison operators
 
 | Operator | Description           |
 | -------- | --------------------- |
@@ -45,7 +45,7 @@ Following the paradigm of functional languages, data types in Elixir are immutab
 | <=       | less than equal to    |
 | >=       | greater than equal to |
 
-## Boolean and negation operators
+### Boolean and negation operators
 
 <code>
 <li>or
@@ -54,7 +54,7 @@ Following the paradigm of functional languages, data types in Elixir are immutab
 <li>!
 </code>
 
-## Arithmetic operators
+### Arithmetic operators
 
 <code>
 <li>+ 
@@ -67,7 +67,7 @@ Join operators <> and ++, as long as the left side is a literal.
 
 The in operator is used for membership in a collection or range.
 
-## Unused operators
+### Unused operators
 
 The following are unused operators which are valid in Elixir
 
@@ -105,7 +105,7 @@ iex> import Kernel, except: [+: 2]
 
 ---
 
-# [Modules](https://elixir-lang.org/getting-started/modules-and-functions.html "Elixir Modules")
+## [Modules](https://elixir-lang.org/getting-started/modules-and-functions.html "Elixir Modules")
 
 Modules provide a namespace for defined functions, macros, structs, protocols, and other modules. Modules are wrapped with
 
@@ -168,7 +168,7 @@ defmodule Example do
 end
 ```
 
-Note the second `alias` directive leaves off `,as: Parser` because the alias defaults to the last part of the module name. An even more concise method would be
+Note the second `alias` directive leaves off `, as: Parser` because the alias defaults to the last part of the module name. An even more concise method would be
 
 ```elixir
 alias My.Other.Module.{Parser, Runner}
@@ -181,6 +181,7 @@ The `require` directive is used when you want to access macros defined within an
 ## Module Attributes
 
 Module attributes are associated metadata defined at the top level of a module with
+
 ```elixir
 @name value
 ```
@@ -198,6 +199,7 @@ IO.puts "This is code written by #{ModuleAttribute.print_name}"
 ### Module Names in Elixir
 
 Module names in Elixir are atoms. When a variable name has an uppercase first letter, Elixir converts it to an atom and prepends it with `Elixir`. So the `String` or `IO` modules, for example, are in fact `Elixir.String` and `Elixir.IO`
+
 # [Functions](https://elixir-lang.org/getting-started/modules-and-functions.html#named-functions)
 
 Functions in Elixir are defined by their name and their arity (number of input arguments).

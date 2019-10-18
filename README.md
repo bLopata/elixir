@@ -1,3 +1,7 @@
+---
+PageTitle: Elixir Readme
+---
+
 # Background on Erlang, Elixir, and OTP
 
 [Elixir](https://elixir-lang.org/) is a dynamic, functional programming language designed for building scalable and highly available applications. Elixir leverages the Erlang VM the lastest version of which uses [BEAM](https://en.wikipedia.org/wiki/BEAM_ "Erlang virtual machine") (aka the new BEAM)- Bogdan/Björn's Erlang Abstract Machine - which was developed by two engineers who worked at Ericcson. BEAM is the virtual machine at the core of the Open Telecom Protocol (OTP) which is in turn part of the Erlang Run-Time System (ERTS) which compiles Erlang/Elixir to bytecode to be executed on the BEAM.
@@ -21,7 +25,9 @@ true       # boolean
 
 The heirarchy of types in elixir is as follows:
 
-`number < atom < reference < function < port < pid < tuple < map < list < bitstring`
+```elixir
+number < atom < reference < function < port < pid < tuple < map < list < bitstring
+```
 
 ```elixir
 iex> 1 < :an_atom
@@ -34,6 +40,7 @@ Following the paradigm of functional languages, data types in Elixir are immutab
 
 ### Comparison operators
 
+```elixir
 | Operator | Description           |
 | -------- | --------------------- |
 | ==       | equality              |
@@ -44,47 +51,48 @@ Following the paradigm of functional languages, data types in Elixir are immutab
 | <        | less than             |
 | <=       | less than equal to    |
 | >=       | greater than equal to |
+```
 
 ### Boolean and negation operators
 
 ```elixir
-* or
-* and
-* not
-* !
+or
+and
+not
+!
 ```
 
 ### Arithmetic operators
 
-```elixir
-* +
-* -
-* *
-* /
+```ex
++
+-
+*
+/
 ```
 
-Join operators <> and ++, as long as the left side is a literal.
+Join operators `<>` and `++`, as long as the left side is a literal.
 
-The in operator is used for membership in a collection or range.
+The `in` operator is used for membership in a collection or range.
 
 ### Unused operators
 
 The following are unused operators which are valid in Elixir
 
 ```elixir
-* |
-* |||
-* &&&
-* <<<
-* >>>
-* ~>>
-* <<~
-* ~>
-* <~
-* <~>
-* <|>
-* ^^^
-* ~~~
+|
+|||
+&&&
+<<<
+>>>
+~>>
+<<~
+~>
+<~
+<~>
+<|>
+^^^
+~~~
 ```
 
 It is possible to bind these operators as well as rebind used operators in Elixir to a custom definition.
@@ -200,7 +208,7 @@ IO.puts "This is code written by #{ModuleAttribute.print_name}"
 
 Module names in Elixir are atoms. When a variable name has an uppercase first letter, Elixir converts it to an atom and prepends it with `Elixir`. So the `String` or `IO` modules, for example, are in fact `Elixir.String` and `Elixir.IO`
 
-# [Functions](https://elixir-lang.org/getting-started/modules-and-functions.html#named-functions)
+## [Functions](https://elixir-lang.org/getting-started/modules-and-functions.html#named-functions)
 
 Functions in Elixir are defined by their name and their arity (number of input arguments).
 
@@ -210,7 +218,7 @@ The shorthand for a function representation is the function named, followed by a
 IO.puts/1
 ```
 
-## Pattern Matching in Function Calls
+### Pattern Matching in Function Calls
 
 Pattern matching in function calls is performed by writing what is essentially a `case` or `switch` statement, with multiple function definitions (or multiple clauses) which have different parameter lists and bodies.
 
@@ -229,7 +237,7 @@ The known clause (0! = 1) is referred to as the **anchor**. Calling `Factorial.o
 
 (_Note: since the functions are called top-down, the anchor clause must be first. Reversing the function calls in the above example will result in a compile error._)
 
-## Private Functions
+### Private Functions
 
 Private functions can also be used to scope functions only within the current module. A private function is defined using the `defp` macro. It is not possible to scope one 'head' (instantiation of a function) as private and another as public, e.g.
 
@@ -238,11 +246,11 @@ def fun(a) when is_list(a), do: true
 defp fun(a), do: false
 ```
 
-## Default Parameters
+### Default Parameters
 
 When defining a function, you can specify a default value to any of the parameters by using
 
-```
+```elixir
 param \\ value
 ```
 
@@ -262,7 +270,7 @@ end
 
 Results in the following error:
 
-```
+```elixir
 warning: definitions with multiple clauses and default values require a header. Instead of:
 
     def foo(:first_clause, b \\ :default) do ... end
@@ -299,7 +307,7 @@ defmodule Params do
 end
 ```
 
-## Guard Clauses
+### Guard Clauses
 
 Expanding on the concept of pattern matching in functions, Guard Clauses allow for type or value checking for function calls.
 
@@ -336,7 +344,7 @@ end
 
 defines the `Factorial.of()` method for all values of n, however the first implementation explicitly defines the domain of our function as non-negative integers.
 
-## Anonymous Functions
+### Anonymous Functions
 
 Anonymous functions are also permitted in Elixir. Anonymous functions are delimeted by the keywords `fn` and `end`, e.g.
 
@@ -364,14 +372,14 @@ For more detail on pattern matching in anonymous functions, see the [fizz_buzz.e
 
 Calling `is_function/2` with the name and arity of the function will return a boolean for the existence of the named function.
 
-## [Capture function (&)](https://elixir-lang.org/getting-started/modules-and-functions.html#function-capturing "Function Capturing")
+### [Capture function (&)](https://elixir-lang.org/getting-started/modules-and-functions.html#function-capturing "Function Capturing")
 
 The capture function in Elixir is a shortcut which can accomplish one of two things:
 
 1. capture a function with a given name and arity from a module which is a handy shorthand to bind a function from a built in module to a local name.
 2. to concisely create anonymous functions.
 
-### Binding a named function
+#### _Binding a named function_
 
 ```elixir
 sayHello = &(IO.puts/1)
@@ -393,7 +401,7 @@ end
 
 In this example, both functions are in the same module, so you do not need to specify the module name as with `IO.puts()`.
 
-### Declaring an anonymous function
+#### _Declaring an anonymous function_
 
 ```elixir
 add_one = &(1 + 1)
@@ -425,7 +433,7 @@ return_tuple.(1, 2) # {1, 2}
 
 The |> operator takes the result of the expression to the left of the operator and passes it as the first parameter into the function to the right of the operator, e.g.
 
-```
+```elixir
 people = DB.find_customers
 orders = Orders.for_customers(people)
 tax = sales_tax(orders, 2018)
@@ -434,7 +442,7 @@ filing = prepare_filing(tax)
 
 Which is a more legible version of
 
-```
+```elixir
 prepare_filing(sales_tax(Orders.for_customers(DB.find_customers), 2018))
 ```
 

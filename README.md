@@ -1,5 +1,6 @@
 ---
 PageTitle: Elixir Readme
+StyleSheet: https://blopata.github.io
 ---
 
 # Background on Erlang, Elixir, and OTP
@@ -18,7 +19,7 @@ true       # boolean
 "elixir"   # string
 [1, 2, 3]  # list
 {1, 2, 3}  # tuple
-%{1=> :ok, # map
+%{1=> :ok}, # map
 2=> "a",
 3=> [1, 2, 3]}
 ```

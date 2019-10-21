@@ -1,7 +1,6 @@
----
-PageTitle: Elixir Readme
-StyleSheet: https://blopata.github.io/assets/css/darkdownstyle.css
----
+[_metadata_:author]: - "benlopata"
+[_metadata_:style]: - "blopata.github.io/assets/css/darkdownstyle.css"
+[_metadata_:tags]: - "elixir fp"
 
 # Background on Erlang, Elixir, and OTP
 

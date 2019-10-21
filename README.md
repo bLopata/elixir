@@ -1,6 +1,6 @@
 ---
 PageTitle: Elixir Readme
-StyleSheet: https://blopata.github.io
+StyleSheet: https://blopata.github.io/assets/css/darkdownstyle.css
 ---
 
 # Background on Erlang, Elixir, and OTP
@@ -19,7 +19,7 @@ true       # boolean
 "elixir"   # string
 [1, 2, 3]  # list
 {1, 2, 3}  # tuple
-%{1=> :ok}, # map
+%{1=> :ok, # map
 2=> "a",
 3=> [1, 2, 3]}
 ```
@@ -140,11 +140,11 @@ ModuleName.OuterModule.InnerModule.my_function()
 
 Note that all modules are defined at the top level, Elixir simply prepends the outer module name to the inner module name, placing a dot between the two module names to distinguish.
 
-## Directives in Modules
+### Directives in Modules
 
 Elixir has three directives for working with modules. These directives are executed at compile-time and are lexically scoped; that is they are only defined within the scope in which they are declared.
 
-### The Import Directive
+#### _The `import` Directive_
 
 The `import` directive brings another module's functions and or macros into the current scope. This can serve to cut down repeated `ModuleName` prefixes to a function.
 
@@ -161,7 +161,7 @@ defmodule Example do
   end
 ```
 
-### The alias Directive
+#### _The `alias` Directive_
 
 The `alias` directive allows for renaming a module for conciseness.
 
@@ -183,11 +183,11 @@ Note the second `alias` directive leaves off `, as: Parser` because the alias de
 alias My.Other.Module.{Parser, Runner}
 ```
 
-### The require Directive
+#### _The`require` Directive_
 
 The `require` directive is used when you want to access macros defined within another module. Macros allow for specific definitions of Elixir syntax to inject code. Macros will be discussed further in Chapter 22.
 
-## Module Attributes
+### Module Attributes
 
 Module attributes are associated metadata defined at the top level of a module with
 

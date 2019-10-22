@@ -20,7 +20,9 @@ true       # boolean
 {1, 2, 3}  # tuple
 %{1=> :ok, # map
 2=> "a",
-3=> [1, 2, 3]}
+3=> [1, 2, 3]},
+a: ":atom keys use key: value",
+b: "but they must be listed last"
 ```
 
 The heirarchy of types in elixir is as follows:

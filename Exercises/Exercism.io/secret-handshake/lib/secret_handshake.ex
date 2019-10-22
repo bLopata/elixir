@@ -1,7 +1,7 @@
 defmodule SecretHandshake do
   use Bitwise
 
-  @mapping %{0b1 => "wink", 0b10 => "double blink", 0b100 => "close your eyes", 0b1000 => "jump"}
+  @mapping %{1 => "wink", 2 => "double blink", 4 => "close your eyes", 8 => "jump"}
   @doc """
   Determine the actions of a secret handshake based on the binary
   representation of the given `code`.
@@ -18,10 +18,7 @@ defmodule SecretHandshake do
   """
   @spec commands(code :: integer) :: list(String.t())
   def commands(code) when code < 0b10000 do
-    @mapping
-    |> Enum.filter(fn {key, _} -> key == (key &&& code) end)
-    |> Enum.map(fn {_, val} -> val end)
+    events = for {key, val} <- @mapping, (key &&& code) > 0, do: val
+    if (code &&& 16)>0, do: events |> Enum.reverse, else do: events
   end
-
-  def commands(code), do: Enum.reverse(commands(code - 0b10000))
 end

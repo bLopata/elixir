@@ -554,5 +554,49 @@ IO.puts Swapper.swap [1, 2, 3, 4, 5, 6] # => [2, 1, 4, 3, 6, 5]
 Or pattern matching for a specific element in a list of lists:
 
 ```elixir
+defmodule WeatherHistory do
+  def for_location([], _target_loc), do: []
+  def for_location([head = [_, target_loc, _, _] | tail], target_loc) do
+    [head | for_location(tail, target_loc)]
+  end
+  def for_location([ _ | tail], target_loc), do: for_location(tail, target_loc)
+end
+```
 
+## Maps, Keyword Lists, Sets, and Structs
+
+Dictionary data types, those that store key value pairs, are Keyword Lists and Maps.
+Dictionary types can be pattern matched against and updated or have functions applied to their values.
+Decisions for what data type to use vary based on the application.
+
+Pattern matching? => `%{}`
+
+Multiple entries with the same key? => `Keyword` module.
+
+Order important? => `Keyword` module
+
+Fixed, repeated schema? => `struct`
+
+Else? => `%{}`
+
+### Keyword Lists
+
+Keyword lists are typically used for options passed to functions.
+
+```elixir
+defmodule Canvas do
+  @defaults [ fg: "black", bg: "white", font: "Merriweather"]
+
+  def draw_test(text, options \\ []) do
+    options = Keyword.merge(@defaults, options)
+    IO.puts "Drawing text #{inspect(text)}"
+    IO.puts "Foreground #{options[:fg]}"
+    IO.puts "Background #{Keyword.get(options, :bg)}"
+    IO.puts "Drawing text #{inspect(text)}"
+    IO.puts "Drawing text #{inspect(text)}"
+    IO.puts "Drawing text #{inspect(text)}"
+    IO.puts "Drawing text #{inspect(text)}"
+    IO.puts "Drawing text #{inspect(text)}"
+  end
+end
 ```

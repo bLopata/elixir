@@ -592,11 +592,7 @@ defmodule Canvas do
     IO.puts "Drawing text #{inspect(text)}"
     IO.puts "Foreground #{options[:fg]}"
     IO.puts "Background #{Keyword.get(options, :bg)}"
-    IO.puts "Drawing text #{inspect(text)}"
-    IO.puts "Drawing text #{inspect(text)}"
-    IO.puts "Drawing text #{inspect(text)}"
-    IO.puts "Drawing text #{inspect(text)}"
-    IO.puts "Drawing text #{inspect(text)}"
+    IO.puts "Font used #{options[:font]}"
   end
 end
 ```

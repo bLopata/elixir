@@ -1,3 +1,6 @@
+---
+Reference: https://stackoverflow.com/questions/30927635/in-elixir-how-do-you-initialize-a-struct-with-a-map-variable
+---
 For a game of [Dungeons & Dragons][DND], each player starts by generating a
 character they can play with. This character has, among other things, six
 abilities; strength, dexterity, constitution, intelligence, wisdom and

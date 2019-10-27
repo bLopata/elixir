@@ -370,7 +370,7 @@ end
 
 Elixir checks for a match against the clauses from top to bottom. If the result of calling `anonymous_function.()` is a tuple `{:ok, x}` the file is opened and the first line is outputted in the terminal. The second clause introduces the wildcard `_` to bind any value in first term of the tuple, provided the second term is `:error`.
 
-For more detail on pattern matching in anonymous functions, see the [fizz_buzz.ex](Exercises\Programming_Elixir_1.6\5_Anonymous_Functions\fizz_buzz.ex) example from the chapter.
+For more detail on pattern matching in anonymous functions, see the [fizz_buzz.ex](./Exercises/Programming_Elixir_1.6/5_Anonymous_Functions/fizz_buzz.ex) example from the chapter.
 
 Calling `is_function/2` with the name and arity of the function will return a boolean for the existence of the named function.
 

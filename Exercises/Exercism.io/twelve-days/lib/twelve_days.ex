@@ -38,7 +38,8 @@ defmodule TwelveDays do
   """
   @spec verses(starting_verse :: integer, ending_verse :: integer) :: String.t()
   def verses(starting_verse, ending_verse) do
-    Enum.join((for num <- starting_verse..ending_verse, do: verse(num)), "\n")
+    # Enum.join((for num <- starting_verse..ending_verse, do: verse(num)), "\n")
+    starting_verse..ending_verse |> Enum.map_join("\n", &verse(&1))
   end
 
   @doc """
@@ -46,6 +47,6 @@ defmodule TwelveDays do
   """
   @spec sing() :: String.t()
   def sing do
-    Enum.join((for num <- 1..12, do: verse(num)), "\n")
+    1..12 |> Enum.map_join("\n", &verse(&1))
   end
 end

@@ -1,11 +1,28 @@
 defmodule Bob do
+  import String
+  import Kernel, except: [length: 1, match?: 2]
   def hey(input) do
     cond do
-      String.capitalize(input) != input and String.ends_with?(input, "?") -> "Calm down, I know what I'm doing!"
-      String.contains?(input, "  ") or String.length(input) == 0 -> "Fine. Be that way!"
-      String.upcase(input) == input and String.match?(input, ~r/[[:alpha:]]/) -> "Whoa, chill out!"
-      String.ends_with?(input, "?") -> "Sure."
-      true -> "Whatever."
+      is_empty?(input)          -> "Fine. Be that way!"
+      is_shout_question?(input) -> "Calm down, I know what I'm doing!"
+      is_shouting?(input)       -> "Whoa, chill out!"
+      is_question?(input)       -> "Sure."
+      true                      -> "Whatever."
     end
+  end
+  defp is_empty?(string) do
+    contains?(string, "  ") or length(string) == 0
+  end
+
+  defp is_shout_question?(string) do
+    match?(string, ~r/[[:alpha:]]/) and ends_with?(string, "?") and upcase(string) == string
+  end
+
+  defp is_shouting?(string) do
+    upcase(string) == string and match?(string, ~r/[[:alpha:]]/)
+  end
+
+  defp is_question?(string) do
+    ends_with?(string, "?")
   end
 end

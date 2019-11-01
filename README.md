@@ -596,3 +596,247 @@ defmodule Canvas do
   end
 end
 ```
+
+### Maps
+
+Maps are the go-to key value store in Elixir. Maps are instantiated with the `%{}` syntax or `Map.new`. Order is not preserved when using a map. Keys can be of any type, but Maps do not allow for duplicate keys (using strict comparison: ===/2). Atom keys allow for `key: value` shorthand rather than using the arrow syntax `key => value`, provided they are at the end. Values can be accessed using `Map.get/3` `Map.fetch/2` or through bracket notation, e.g. `map[]` (as part of the Access module).
+
+Maps can be pattern matched against like other data stores in Elixir.
+
+```elixir
+iex> person = %{name: "Ben", height: 1.88}
+%{height: 1.88, name: "Ben"}
+iex> %{name: a_name} = person
+%{height: 1.88, name: "Ben"}
+iex>a_name
+"Ben"
+iex> %{name: _, height: _} = person
+%{height: 1.88, name: "Ben"}
+iex> %{height: _, weight: _} = person
+(MatchError) no match of right hand side value: %{height: 1.88, name: "Ben"}
+```
+
+Pattern matching can also be used to update values in maps.
+
+```elixir
+iex> n = 1
+1
+iex>%{n => :one}
+%{1 => :one}
+iex> %{^n => :one} = %{1 => :one, 2 => :two, 3 => :three}
+%{1 => :one, 2 => :two, 3 => :three}
+```
+
+You can update _existing_ atom keys by using the update operator `|`
+
+```elixir
+iex> map = %{one: 1, two: 2}
+iex> %{map | one: "one}
+%{one: "one", two: 2}
+iex>%{map | three: 3}
+** (KeyError) key :three not found
+```
+
+### Structs
+
+Structs are used when it is necessary to enforce strict typing on a map. Structs are essentially a module that wraps a limited form of a map. Struct keys must be atoms and structs do not support dict capabilities.
+
+```elixir
+defmodule Reader do
+  defstruct name: "", has_library_card: false, over_18: true
+end
+```
+
+We then can work with this `Reader` module in iex
+
+```elixir
+iex> r1 = %Reader{}
+%Reader{name: "", over_18: true, has_library_card: false}
+iex> r2 = %Reader{name: "Ben", has_libary_card: true}
+%Reader{name: "Ben", over_18: true, has_library_card: true}
+```
+
+Fields in a struct can be accessed using dot notation and pattern matching and `|` operator to update function the same as a generic map.
+
+```elixir
+iex>r2.has_library_card
+true
+iex>r3 = %Reader{ r2 | name: "Benjamin" }
+%Reader{name: "Benjamin", over_18: true, has_library_card: true}
+```
+
+Structs are wrapped in a module to allow for specific logic based on the values
+
+```elixir
+defmodule Attendee do
+  defstruct name: "", paid: false, over_18: true
+
+  def may_attend_after_party(attendee = %Attendee{}) do
+    attendee.paid && attendee.over_18
+  end
+
+  def print_vip_badge(%Attendee{name: name}) when name != "" do
+    IO.puts "Very cheap badge for #{name}"
+  end
+
+  def print_vip_badge(%Attendee{}) do
+    raise "missing name for badge"
+  end
+end
+```
+
+### Nested Dictionary Structures
+
+Suppose we have a struct type which is itself a struct, e.g.:
+
+```elixir
+defmodule Customer do
+  defstruct name: "", company: ""
+end
+
+defmodule BugReport do
+  defstruct owner: %Customer{}, details: "", severity: 1
+end
+```
+
+We could then create a report using the above structs:
+
+```elixir
+iex> report = %BugReport{owner: %Customer{name: "Ben", company: "Pragmatic"}, details: "its broken"}
+%BugReport{details: "broken", owner: %Customer{company: "Pragmatic", name: "Ben"}, severity: 1}
+```
+
+We could access properties using dot notation `report.owner.company # => "Pragmatic"` and updated using `|`:
+
+```elixir
+report = %BugReport{report | owner: %Customer{ report.owner | company: "PragProg"}}
+```
+
+However this is verbose and difficult to comprehend. Enter the `Access` module! Using `put_in/2`, the above can be written simply as:
+
+```elixir
+iex> put_in(report.owner.company, "PragProg")
+%BugReport{details: "broken", owner: %Customer{company: "PragProg", name: "Ben"}, severity: 1}
+```
+
+The `update_in/2` method allows us to apply a function to a struct's field:
+
+```elixir
+iex> update_in(report.owner.name, &("Mr. " <> &1))
+%BugReport{details: "broken", owner: %Customer{company: "PragProg", name: "Mr. Ben"}, severity: 1}
+```
+
+The above methods are actually macros which operate at compile time. As a result, the number of keys you can pass to a particular method is static and the set of keys cannot be passed as parameters between functions.
+
+The methods `get_in` and `get_and_update_in` can optionally take a list of keys as a parameter which changes the implementation from macros (static, processed at compile-time) to functions (dynamic, processed at run-time).
+
+```elixir
+| Name              | Macro Parameters | Function Parameters |
+| ----------------- | ---------------- | ------------------- |
+| get_in            | N/A              | (dict, keys)        |
+| put_in            | (path, value)    | (dict, keys, value) |
+| update_in         | (path, fn)       | (dict, keys, fn)    |
+| get_and_update_in | (path, fn)       | (dict, keys, fn)    |
+```
+
+The dynamic versions of `get_in` and `get_and_update_in` can both be passed a function as a key, and will return the values of invoking the function, e.g.:
+
+```elixir
+authors = [
+  %{name: "José", language: "Elixir"},
+  %{name: "Matz", language: "Ruby"},
+  %{name: "Larry", language: "Perl"},
+]
+
+languages_with_an_r = fn (:get, collection, next_fn) ->
+  for row <- collection do
+   if String.contains?(row.language, "r"), do: next_fn.(row)
+  end
+end
+
+IO.inspect get_in(authors, [languages_with_an_r, :name])
+#=> ["Jose", nil, "Larry"]
+```
+
+This concept of passing a function as a key can be expanded using two methods from the Access module, `all` and `at`:
+
+```elixir
+IO.inspect get_in(authors, [Access.all(), :name])
+#=> ["José", "Matz", "Larry"]
+
+IO.inspect get_in(authors, [Access.at(1), :language])
+#=> "Ruby"
+
+IO.inspect get_and_update_in(authors, [Access.all(), :name], fn (val) -> String.upcase(val) end)
+#=> ["JOSE", "MATZ", "LARRY"]
+```
+
+And `Access.elem` can access values within a tuple:
+
+```elixir
+rappers = [
+  %{
+    rap_name: {"Slim", "Shady"},
+    name: "Marshall Mathers"
+  },
+  %{
+    rap_name: {"Nate", "Dogg"},
+    name: "Nathaniel Dwayne Hale"
+  }
+]
+
+
+IO.inspect get_and_update_in(rappers, [Access.all(), :rap_name, Access.elem(0)], fn val -> {val, String.reverse(val)} end)
+
+#=>{["Slim", "Nate"],
+#  [
+#    %{name: "Marshall Mathers", rap_name: # {"milS", "Shady"}},
+#    %{name: "Nathaniel Dwayne Hale", # rap_name: {"etaN", "Dogg"}}
+#  ]}
+```
+
+`Access.key()` lets you specify which element in a dictionary type (maps and structs) to access.
+
+```elixir
+cast = %{
+  buttercup: %{
+    actor: {"Robin", "Wright},
+    character: "princess"
+  },
+  westley: %{
+    actor: {"Carey", "Elwes"},
+    character: "farm boy"
+  }
+}
+
+Io.inspect get_and_update_in(cast, [Access.key(:westley), :role], fn val -> {val, "Queen"} end)
+
+#=> {"princess",
+#    %{buttercup: %{actor: {"Robin", "Wright"}, role: "Queen"},
+#    westley: %{actor: {"Carey", "Elwes"}, role: "farm boy"}}}
+```
+
+`Access.pop` allows you to remove an entry with a given key in from a map or keyword list and returns the tuple containing the value associated with the key and the updated container.
+
+### Sets
+
+Sets are implemented using the `Mapsets` module.
+
+```elixir
+iex> set1 = 1..5 |> Enum.into(MapSet.new)
+#MapSet<[1, 2, 3, 4, 5]>
+iex> set2 = 3..8 |> Enum.into(MapSet.new)
+#MapSet<[3, 4, 5, 6, 7, 8]>
+iex> MapSet.member? set1, 3
+true
+iex> MapSet.union set1, set2
+#MapSet<[1, 2, 3, 4, 5, 6, 7, 8]>
+iex> MapSet.difference set1, set2
+#MapSet<[1, 2]>
+iex> MapSet.difference set2, set1
+#MapSet<[6, 7, 8]>
+iex> MapSet.intersection set2, set1
+#MapSet<[3, 4, 5]>
+```
+
+### Enum and Stream

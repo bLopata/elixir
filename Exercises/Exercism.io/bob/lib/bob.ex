@@ -4,7 +4,8 @@ defmodule Bob do
   def hey(input) do
     cond do
       is_empty?(input)          -> "Fine. Be that way!"
-      is_shout_question?(input) -> "Calm down, I know what I'm doing!"
+      is_shouting?(input) and
+      is_question?(input)       -> "Calm down, I know what I'm doing!"
       is_shouting?(input)       -> "Whoa, chill out!"
       is_question?(input)       -> "Sure."
       true                      -> "Whatever."
@@ -12,10 +13,6 @@ defmodule Bob do
   end
   defp is_empty?(string) do
     contains?(string, "  ") or length(string) == 0
-  end
-
-  defp is_shout_question?(string) do
-    match?(string, ~r/[[:alpha:]]/) and ends_with?(string, "?") and upcase(string) == string
   end
 
   defp is_shouting?(string) do
@@ -26,3 +23,5 @@ defmodule Bob do
     ends_with?(string, "?")
   end
 end
+
+

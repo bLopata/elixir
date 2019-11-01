@@ -839,4 +839,4 @@ iex> MapSet.intersection set2, set1
 #MapSet<[3, 4, 5]>
 ```
 
-### Enum and Stream
+## Enum and Stream to Process Collections

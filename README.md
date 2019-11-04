@@ -579,7 +579,7 @@ Fixed, repeated schema? => `struct`
 
 Else? => `%{}`
 
-### Keyword Lists
+### [Keyword Lists](https://hexdocs.pm/elixir/Keyword.html#new/0 "HexDocs - Keyword collection")
 
 Keyword lists are typically used for options passed to functions.
 
@@ -597,7 +597,7 @@ defmodule Canvas do
 end
 ```
 
-### Maps
+### [Maps](https://hexdocs.pm/elixir/Map.html#content "HexDocs - Map collection")
 
 Maps are the go-to key value store in Elixir. Maps are instantiated with the `%{}` syntax or `Map.new`. Order is not preserved when using a map. Keys can be of any type, but Maps do not allow for duplicate keys (using strict comparison: ===/2). Atom keys allow for `key: value` shorthand rather than using the arrow syntax `key => value`, provided they are at the end. Values can be accessed using `Map.get/3` `Map.fetch/2` or through bracket notation, e.g. `map[]` (as part of the Access module).
 
@@ -637,7 +637,7 @@ iex>%{map | three: 3}
 ** (KeyError) key :three not found
 ```
 
-### Structs
+### [Structs](https://hexdocs.pm/elixir/Kernel.html#defstruct/1 "HexDocs - Kernel.SpecialForms")
 
 Structs are used when it is necessary to enforce strict typing on a map. Structs are essentially a module that wraps a limited form of a map. Struct keys must be atoms and structs do not support dict capabilities.
 
@@ -818,7 +818,7 @@ Io.inspect get_and_update_in(cast, [Access.key(:westley), :role], fn val -> {val
 
 `Access.pop` allows you to remove an entry with a given key in from a map or keyword list and returns the tuple containing the value associated with the key and the updated container.
 
-### Sets
+### [Sets](https://hexdocs.pm/elixir/MapSet.html#content "HexDocs - MapSet collection")
 
 Sets are implemented using the `Mapsets` module.
 

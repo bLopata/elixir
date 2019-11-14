@@ -13,16 +13,17 @@ defmodule IsbnVerifier do
   """
   @spec isbn?(String.t()) :: boolean
   def isbn?(isbn) do
-    String.replace(isbn, "-", "")
-    |> String.split("", trim: true)
-    |> IO.inspect
-    # |> valid?
-
+    case Regex.match?(~r/^(\d-?){9}(X|\d)$/, isbn) do
+      false -> false
+      true -> String.replace(isbn, "-", "")
+      |> String.split("", trim: true)
+      |> Enum.zip(10..1)
+      |> Enum.map(&calculate_isbn/1)
+      |> Enum.sum
+      |> rem(11) == 0
+    end
   end
 
-  defp valid?(char) when is_integer(char) do
-    sum = for y <- 10..1, do: String.to_integer(char) * y
-    Enum.sum(sum) |> rem(11) == 0
-  end
-  defp valid?(_), do: false
+  defp calculate_isbn({"X", _}), do: 10
+  defp calculate_isbn({val, mult}), do: String.to_integer(val) * mult
 end

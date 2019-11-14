@@ -6,6 +6,7 @@ defmodule RobotSimulator do
     south: :west,
     west: :north
     }
+
   @left_turns %{
     north: :west,
     east: :north,
@@ -51,15 +52,22 @@ defmodule RobotSimulator do
   """
   @spec simulate(robot :: any, instructions :: String.t()) :: any
   def simulate(robot, instructions) do
-    handle = fn
-      "R", robot -> %{robot | direction: Map.fetch!(@right_turns, robot.direction)}
-      "L", robot -> %{robot | direction: Map.fetch!(@left_turns, robot.direction)}
-      "A", %{position: {x, y}, direction: :north} = robot -> %{robot | position: {x, y+1}}
-      "A", %{position: {x, y}, direction: :east} = robot -> %{robot | position: {x+1, y}}
-      "A", %{position: {x, y}, direction: :south} = robot -> %{robot | position:  {x, y-1}}
-      "A", %{position: {x, y}, direction: :west} = robot -> %{robot | position: {x-1, y}}
-      _, _ -> {:error, "invalid instruction"}
+    case Regex.match?(~r/[^RLA]/, instructions) do
+      true -> {:error, "invalid instruction"}
+      false ->
+        instructions |> String.graphemes |> Enum.reduce(robot, &handle(&1, &2))
     end
-    instructions |> String.graphemes |> Enum.reduce(robot, &handle.(&1, &2))
+  end
+
+  defp handle("R", robot), do: %{robot | direction: Map.fetch!(@right_turns, robot.direction)}
+  defp handle("L", robot), do: %{robot | direction: Map.fetch!(@left_turns, robot.direction)}
+  defp handle("A", robot) do
+    advance = fn
+      {x, y}, :north -> {x, y+1}
+      {x, y}, :east -> {x+1, y}
+      {x, y}, :south -> {x, y-1}
+      {x, y}, :west -> {x-1, y}
+    end
+    %{robot | position: advance.(robot.position, robot.direction)}
   end
 end

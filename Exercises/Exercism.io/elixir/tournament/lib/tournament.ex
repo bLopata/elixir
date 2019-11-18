@@ -12,5 +12,7 @@ defmodule Tournament do
   """
   @spec tally(input :: list(String.t())) :: String.t()
   def tally(input) do
+    res = Enum.map(input, fn x -> String.split(x, ";", parts: 3) end) |> List.flatten
+    teams = for name <- res, String.length(name) > 4, do: name
   end
 end

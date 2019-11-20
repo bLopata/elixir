@@ -908,3 +908,51 @@ Stream.resource(fn -> File.open!("sample") end,
 ```
 
 This example first opens the file when the stream becomes active, reads each line from the input file, returning either the line's contents and the file as a tuple or a `:halt` tuple at the end of the file, and finally closing the file.
+
+### Comprehensions
+
+Comprehensions provide a shortcut for mapping and filters collections which are concise and idiomatic. Comprehensions take one or more collections as inputs, extracting all combinations of values for each, optionally filtering the resultant values, and generates a new collection using the remaining values.
+
+```elixir
+iex> for x <- Enum.into(1..5, []), do: x * x
+[1, 4, 9, 16, 25]
+iex> for x <- [1, 2, 3, 4, 5], x < 4, do: x * x
+[1, 4, 9]
+```
+
+`x <- [1, 2, 3]` says that we want to first run the `do` block of the comprehension with `x = 1`, then 2 then 3. For multiple generators, the operations are nested, so the comprehension:
+
+```elixir
+for x <- [1, 2], y <- [5, 6], do: x * y
+[5, 6, 10, 12]
+```
+
+evaluates as `x=1`, `y=5`, `x=1`, `y=6`, `x=2`, `y=5`, `x=2`, `y=6`.
+
+A filter in a comprehension acts as a predicate. If the condition evaluates to false, the comprehension moves to the next iteration without evaluating the `do` block.
+
+Bitstrings, including binaries and strings, also work using comprehensions.
+
+```elixir
+iex> for <<ch <- "hello">>>, do: ch
+'hello'
+iex> for <<ch <- "hello">>, do: <<ch>>
+["h", "e", "l", "l", "o"]
+```
+
+The first comprehension evaluates to a charcode list [104, 101, 108, 108, 111] which elixir evaluates to `hello`. In the next case, the `do` block converts the result back into a string, which is evaluated to be a list of one-character strings.
+
+All variable assignments inside a comprehension are scoped locally to that comprehension and will not affect variables in the outer scope:
+
+```elixir
+iex> name = "Ben"
+Ben
+iex> for name <- ['Neptune', 'Jupiter'], do: String.upcase(name)
+["NEPTUNE", "JUPITER"]
+iex> name
+Ben
+```
+
+The `into:` option allows for returning collections other than the default list. The collection does not need to be empty, so you can append values to a map using a comprehension.
+
+## [Strings and Binaries](https://hexdocs.pm/elixir/String.html#content "HexDocs - Strings")

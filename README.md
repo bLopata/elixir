@@ -429,7 +429,7 @@ return_tuple = &{&1, 2}
 return_tuple.(1, 2) # {1, 2}
 ```
 
-![Capture operator in action](/docs/images/capture+operator.jpg)
+![Capture operator in action](./docs/images/capture+operator.jpg)
 
 ## [Pipe Operator (|>)](https://elixir-lang.org/getting-started/enumerables-and-streams.html#the-pipe-operator "Pipe Operator")
 

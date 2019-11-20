@@ -839,4 +839,72 @@ iex> MapSet.intersection set2, set1
 #MapSet<[3, 4, 5]>
 ```
 
-## Enum and Stream to Process Collections
+## Using The [Enum](https://hexdocs.pm/elixir/Enum.html "HexDocs - Enum module") and [Stream](https://hexdocs.pm/elixir/Stream.html "HexDocs - Stream module") Modules to Process Collections
+
+Elixir has a number of types that act as collections: lists, maps, ranges, files, and even functions are all examples of collections. All collections can be iterated through, and some can be added to. Things that can be iterated are said to belong to the `Enumerable` protocol. The two primary modules for dealing with collections are `Enum` and `Stream`. The `Enum` module contains a vast array of methods for dealing with collections, parsing and filtering inputs, splitting and joining, indexing, mapping, etc. `Enum` methods can be performed in linear time, and are eager (they traverse the enumerable as soon as they are invoked) - thus it is sometimes useful to use the `Stream` module. `Stream` offers the ability to perform lazy composition and computation - while iterating, the subsequent value is only calculated when it is needed.
+
+To show the benefits of the `Stream` module, take this pipeline which parses a file and returns the longest word contained in a dictionary:
+
+```elixir
+IO.puts File.read!("/usr/share/dict/words")
+  |> String.split
+  |> Enum.max_by(&String.length/1)
+```
+
+This code reads the entire file into memory, splits the file into a list of words, and processes that list in memory to find the longest word. These calls to `Enum` methods are self-contained: they consume and return a collection. Enter `Stream` to process the elements as we need them, and not make costly duplications in memory.
+
+```elixir
+IO.inspect 1..4
+  |> Stream.map(&(&1*&1))
+  |> Stream.map(&(&1+1))
+  |> Stream.filter(&rem(&1, 2) == 1)
+  |> Enum.to_list
+
+# => [5, 17]
+```
+
+The `Stream` module passes successive elements of each collection into the next in the pipeline. Now our code for the longest-word can be optimized to:
+
+```elixir
+IO.puts File.open!("usr/share/dict/words")
+  |> IO.stream(:line)
+  |> Enum.max_by(&String.length/1)
+```
+
+`IO.Stream` converts an IO device (the open file) into a stream which processes one line at a time. This can be shortened to `File.stream!("usr/share/dict/words") |> Enum.max_by(&String.length/1)`.
+
+While slower, the `Stream` module's implementation shines in certain use cases, for example reading data from a server. With the `Enum` module, we would need to wait for the entire collection to arrive before any processing can be completed - and the data could be infinite. With streams we can process them as they arrive.
+
+With infinte streams, there are a few methods which are useful `Stream.iterate`, `Stream.repeatedly`, `Stream.cycle`, `Stream.unfold`, and `Stream.resource`.
+
+`Stream.iterate(start_value, next_fun)` generates an infinite stream beginning with `start_value`, and then applying `next_fun` to this value ad infinitum.
+
+`Stream.repeatedly` takes a function and invokes it each time a new value is requested.
+
+`Stream.cycle` takes an enumerable and returns an infinite stream containing that enumerable's elements. If the end of the enumerable is reached, it simply restarts from the beginning.
+
+`Stream.unfold` allows for explicit typing of values output to the stream as well as values passed to the next iteration. You supply an initial value and a function, like with `Stream.iterate`, the function uses the argument to create a two-value tuple. The first element of the return is the value returned by this iteration, and the next element is the value to be passed to the next iteration of the stream, terminating upon reaching a `nil` value. The general form of the function is
+
+```elixir
+fn state -> {stream_value, new_state} end
+```
+
+```elixir
+IO.inspect Stream.unfold({0,1}, fn {f1, f2} -> {f1, {f2, f1+f2}} end) |> Enum.take(15)
+# => [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
+```
+
+`Stream.resorce` builds upon `Stream.unfold` as a means to interact with an external resource, such as reading a file's contents. The first parameter is not a value, but rather a function that returns a value. The third parameter is what the stream should do when it is done with the resource such as closing a file and deallocating any resources.
+
+```elixir
+Stream.resource(fn -> File.open!("sample") end,
+  fn file ->
+    case IO.read(file, :line) do
+      data when is_binary(data) -> {[data], file}
+      _ -> {:halt, file}
+    end
+  end
+  fn file -> File.close(file) end)
+```
+
+This example first opens the file when the stream becomes active, reads each line from the input file, returning either the line's contents and the file as a tuple or a `:halt` tuple at the end of the file, and finally closing the file.

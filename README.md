@@ -956,3 +956,35 @@ Ben
 The `into:` option allows for returning collections other than the default list. The collection does not need to be empty, so you can append values to a map using a comprehension.
 
 ## [Strings and Binaries](https://hexdocs.pm/elixir/String.html#content "HexDocs - Strings")
+
+Strings in Elixir are UTF-8 encoded binary. Whereas in most languages, strings can be single-quoted or double-quoted, in Elixir double-quotes are reserved for strings while single-quotes are character lists. Strings may contain escape sequences `\n` is a newline character, for example and `\\n` will print `\n`. Strings support interpolation using `#{text}`. Heredocs, multi-line strings often used in [documentation](https://hexdocs.pm/elixir/Module.html#module-doc-and-typedoc "HexDocs - @doc and @typedoc") can be implemented using `"""`. Sigils are supported for shorthand syntax for some literals, such as `~r{/expr/}` for a regular expression. Sigils begin with a tilde, followed by an upper or lowercase letter, some delimited content (acceptable delimiters are <>, {}, [], (), | |, / /, " ", and ' ').
+
+Single-quoted strings, also character lists or charlists for short, are internally represented as lists of integer values. Charlists can be manipulated using list syntax `'hi' ++ 'ghtower' # hightower` If IEx does not think a charlist can be printed, it reverts to the charlist representation and returns the character codes.
+
+Binary types represent a series of bits. Binaries in Elixir appear as `<< term,.. >>` and you can specify the bit-size using `<< 1::size(2), 1::size(3) >> # 01 001`.
+
+Double-quoted strings are UTF-8 encoded binary. UTF-8 characters may take more than a single byte to represent, so the length of the string is not always equal to the length of the binary. When working with strings it may be necessary to work with the binary syntax alongside the list syntax.
+
+Working with binaries is also aided with typing. Supported types are `binary`, `bits`, `bitstring`, `bytes`, `float`, `integer`, `utf8`, `utf16`, and `utf32` and can be qualified with `size(n)`
+
+```elixir
+<< length::unsigned-integer-size(12), flags::bitstring-size(4) >> = data
+```
+
+Type-checking can be pattern matched similarly to lists using `head` and `tail` with binary syntax:
+
+```elixir
+defmodule Utf8 do
+  def each(str, func) when is_binary(str), do: _each(str, func)
+  defp _each(<< head :: utf8, tail :: binary >>, func) do
+    func.(head)
+    _each(tail, func)
+  end
+  defp _each(<<>>, _func), do: []
+  end
+Utf8.each "∂og", fn char -> IO.puts char end
+
+# 8706
+# 111
+# 103
+```

@@ -1,29 +1,35 @@
 defmodule RobotSimulator do
+  defstruct position: {0, 0}, direction: :north
+
+  @type t :: %__MODULE__{
+          position: {integer(), integer()},
+          direction: :atom
+        }
   @directions [:north, :east, :south, :west]
   @right_turns %{
     north: :east,
     east: :south,
     south: :west,
     west: :north
-    }
+  }
 
   @left_turns %{
     north: :west,
     east: :north,
     south: :east,
     west: :south
-    }
+  }
 
   @doc """
   Create a Robot Simulator given an initial direction and position.
 
   Valid directions are: `:north`, `:east`, `:south`, `:west`
   """
-  @spec create(direction :: atom, position :: {integer, integer}) :: any
+  @spec create(direction :: atom, position :: {integer, integer}) :: t
   def create(direction \\ :north, position \\ {0, 0}) do
     with :ok <- validate_pos(position),
          :ok <- validate_dir(direction),
-    do: %{position: position, direction: direction}
+         do: %__MODULE__{position: position, direction: direction}
   end
 
   defp validate_dir(dir) when dir in @directions, do: :ok
@@ -53,21 +59,27 @@ defmodule RobotSimulator do
   @spec simulate(robot :: any, instructions :: String.t()) :: any
   def simulate(robot, instructions) do
     case Regex.match?(~r/[^RLA]/, instructions) do
-      true -> {:error, "invalid instruction"}
+      true ->
+        {:error, "invalid instruction"}
+
       false ->
-        instructions |> String.graphemes |> Enum.reduce(robot, &handle(&1, &2))
+        instructions |> String.graphemes() |> Enum.reduce(robot, &handle(&1, &2))
     end
   end
 
   defp handle("R", robot), do: %{robot | direction: Map.fetch!(@right_turns, robot.direction)}
   defp handle("L", robot), do: %{robot | direction: Map.fetch!(@left_turns, robot.direction)}
+
   defp handle("A", robot) do
     advance = fn
-      {x, y}, :north -> {x, y+1}
-      {x, y}, :east -> {x+1, y}
-      {x, y}, :south -> {x, y-1}
-      {x, y}, :west -> {x-1, y}
+      {x, y}, :north -> {x, y + 1}
+      {x, y}, :east -> {x + 1, y}
+      {x, y}, :south -> {x, y - 1}
+      {x, y}, :west -> {x - 1, y}
     end
+
     %{robot | position: advance.(robot.position, robot.direction)}
   end
+
+  defp handle(_, _), do: :error
 end

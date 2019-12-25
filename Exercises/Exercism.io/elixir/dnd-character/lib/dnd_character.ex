@@ -17,23 +17,24 @@ defmodule DndCharacter do
   end
 
   @spec ability :: pos_integer()
-  def ability do
+  def rng do
     for(_ <- 1..4, do: Enum.random(1..6))
-    |> Enum.sort
+    |> Enum.sort()
     |> Enum.drop(1)
-    |> Enum.sum
+    |> Enum.sum()
   end
 
   @spec character :: t()
   def character do
     constitution = ability()
+
     %{
-      strength: ability(),
-      dexterity: ability(),
+      strength: rng(),
+      dexterity: rng(),
       constitution: constitution,
-      intelligence: ability(),
-      wisdom: ability(),
-      charisma: ability(),
+      intelligence: rng(),
+      wisdom: rng(),
+      charisma: rng(),
       hitpoints: 10 + modifier(constitution)
     }
   end

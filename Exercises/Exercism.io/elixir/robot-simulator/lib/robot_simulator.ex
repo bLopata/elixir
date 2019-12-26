@@ -3,7 +3,7 @@ defmodule RobotSimulator do
 
   @type t :: %__MODULE__{
           position: {integer(), integer()},
-          direction: :atom
+          direction: :north | :east | :south | :west
         }
   @directions [:north, :east, :south, :west]
   @right_turns %{
@@ -27,16 +27,19 @@ defmodule RobotSimulator do
   """
   @spec create(direction :: atom, position :: {integer, integer}) :: t
   def create(direction \\ :north, position \\ {0, 0}) do
-    with true <- is_integer(position.x),
-         true <- is_integer(position.y),
-         direction in @directions,
-         do: %__MODULE__{position: position, direction: direction}
+    with(
+      true when is_atom(direction) and is_tuple(position) <- direction in @directions,
+      2 when is_integer(elem(position, 0)) and is_integer(elem(position, 1)) <- tuple_size(position)) do
+        %__MODULE__{position: position, direction: direction}
+    else
+      false -> cond do
+        is_tuple(position) == true ->
+          {:error, "invalid direction"}
+        true -> {:error, "invalid position"}
+      end
+      _ -> {:error, "invalid position"}
+    end
   end
-
-  defp validate_dir(dir) when dir in @directions, do: :ok
-  defp validate_dir(_), do: {:error, "invalid direction"}
-  defp validate_pos({x, y}) when is_integer(x) and is_integer(y), do: :ok
-  defp validate_pos(_), do: {:error, "invalid position"}
 
   @doc """
   Return the robot's direction.
@@ -62,7 +65,6 @@ defmodule RobotSimulator do
     case Regex.match?(~r/[^RLA]/, instructions) do
       true ->
         {:error, "invalid instruction"}
-
       false ->
         instructions |> String.graphemes() |> Enum.reduce(robot, &handle(&1, &2))
     end
@@ -78,7 +80,6 @@ defmodule RobotSimulator do
       {x, y}, :south -> {x, y - 1}
       {x, y}, :west -> {x - 1, y}
     end
-
     %{robot | position: advance.(robot.position, robot.direction)}
   end
 

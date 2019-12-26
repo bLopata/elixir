@@ -5,7 +5,9 @@ defmodule RobotSimulator do
           position: {integer(), integer()},
           direction: :north | :east | :south | :west
         }
+
   @directions [:north, :east, :south, :west]
+
   @right_turns %{
     north: :east,
     east: :south,
@@ -29,7 +31,8 @@ defmodule RobotSimulator do
   def create(direction \\ :north, position \\ {0, 0}) do
     with(
       true when is_atom(direction) and is_tuple(position) <- direction in @directions,
-      2 when is_integer(elem(position, 0)) and is_integer(elem(position, 1)) <- tuple_size(position)) do
+      2 when is_integer(elem(position, 0) + elem(position, 1)) <- tuple_size(position)
+      ) do
         %__MODULE__{position: position, direction: direction}
     else
       false -> cond do

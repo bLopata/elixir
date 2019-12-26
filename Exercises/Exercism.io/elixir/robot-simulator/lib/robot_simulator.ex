@@ -27,8 +27,9 @@ defmodule RobotSimulator do
   """
   @spec create(direction :: atom, position :: {integer, integer}) :: t
   def create(direction \\ :north, position \\ {0, 0}) do
-    with :ok <- validate_pos(position),
-         :ok <- validate_dir(direction),
+    with true <- is_integer(position.x),
+         true <- is_integer(position.y),
+         direction in @directions,
          do: %__MODULE__{position: position, direction: direction}
   end
 

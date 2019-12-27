@@ -1,12 +1,18 @@
+defmodule RobotSimulator.Guards do
+  @directions [:north, :east, :south, :west]
+
+  defguard is_position(pos) when is_integer(elem(pos, 0) + elem(pos, 1)) and tuple_size(pos) == 2
+  defguard is_direction(dir) when is_atom(dir) and dir in @directions
+end
+
 defmodule RobotSimulator do
+  import RobotSimulator.Guards
   defstruct position: {0, 0}, direction: :north
 
   @type t :: %__MODULE__{
           position: {integer(), integer()},
           direction: :north | :east | :south | :west
         }
-
-  @directions [:north, :east, :south, :west]
 
   @right_turns %{
     north: :east,
@@ -29,20 +35,17 @@ defmodule RobotSimulator do
   """
   @spec create(direction :: atom, position :: {integer, integer}) :: t
   def create(direction \\ :north, position \\ {0, 0}) do
-    with(
-      true when is_atom(direction) and is_tuple(position) <- direction in @directions,
-      2 when is_integer(elem(position, 0) + elem(position, 1)) <- tuple_size(position)
-      ) do
-        %__MODULE__{position: position, direction: direction}
-    else
-      false -> cond do
-        is_tuple(position) == true ->
-          {:error, "invalid direction"}
-        true -> {:error, "invalid position"}
-      end
-      _ -> {:error, "invalid position"}
-    end
+    with :ok <- validate_pos(position),
+         :ok <- validate_dir(direction),
+    do: %{position: position, direction: direction}
   end
+
+
+  defp validate_dir(dir) when is_direction(dir), do: :ok
+  defp validate_dir(_), do: {:error, "invalid direction"}
+  defp validate_pos(pos) when is_position(pos), do: :ok
+  defp validate_pos(_), do: {:error, "invalid position"}
+
 
   @doc """
   Return the robot's direction.

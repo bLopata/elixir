@@ -1,4 +1,7 @@
 defmodule RobotSimulator.Guards do
+  @moduledoc """
+  Custom guards to validate position and direction in RobotSimulator.
+  """
   @directions [:north, :east, :south, :west]
 
   defguard is_position(pos) when is_integer(elem(pos, 0) + elem(pos, 1)) and tuple_size(pos) == 2

@@ -38,7 +38,6 @@ defmodule RobotSimulator do
   """
   @spec create(direction :: atom, position :: {integer, integer}) :: t
   def create(direction \\ :north, position \\ {0, 0}) do
-<<<<<<< HEAD
     with :ok <- validate_pos(position),
          :ok <- validate_dir(direction),
     do: %{position: position, direction: direction}
@@ -50,23 +49,6 @@ defmodule RobotSimulator do
   defp validate_pos(pos) when is_position(pos), do: :ok
   defp validate_pos(_), do: {:error, "invalid position"}
 
-
-=======
-    with(
-      true when is_atom(direction) and is_tuple(position) <- direction in @directions,
-      2 when is_integer(elem(position, 0) + elem(position, 1)) <- tuple_size(position)) do
-        %__MODULE__{position: position, direction: direction}
-    else
-      false -> cond do
-        is_tuple(position) == true ->
-          {:error, "invalid direction"}
-        true -> {:error, "invalid position"}
-      end
-      _ -> {:error, "invalid position"}
-    end
-  end
-
->>>>>>> 098ff97ec6f08aa02f22b4fd46dae8b5d23ee962
   @doc """
   Return the robot's direction.
 

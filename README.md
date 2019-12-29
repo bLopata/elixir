@@ -346,6 +346,14 @@ end
 
 defines the `Factorial.of()` method for all values of n, however the first implementation explicitly defines the domain of our function as non-negative integers.
 
+#### [Custom guard clauses](https://hexdocs.pm/elixir/Kernel.html#defguard/1 "HexDocs - defguard")
+
+Custom guards may be written using the `defguard(guard)` construct. Custom guards allow for code reuse when type checking or other logic is required in multiple functions. This lends itself well to overloading functions and polymorphism.
+
+Custom guards will raise on compile time if the definition uses expressions which are not allowed in guards. If no such conditions are found, `defguard` and `defguardp` will create macros that can be used both inside and outside guards.
+
+The convention in Elixir is to name functions/macros which are allowed in guards with the `is_` prefix, e.g. `is_list/1`. Functions/macros which return booleans and are not allowed in guards, the convention is to add a question mark, e.g. `Keyword.keyword?/1`.
+
 ### Anonymous Functions
 
 Anonymous functions are also permitted in Elixir. Anonymous functions are delimeted by the keywords `fn` and `end`, e.g.

@@ -40,9 +40,8 @@ defmodule RobotSimulator do
   def create(direction \\ :north, position \\ {0, 0}) do
     with :ok <- validate_pos(position),
          :ok <- validate_dir(direction),
-    do: %{position: position, direction: direction}
+         do: %{position: position, direction: direction}
   end
-
 
   defp validate_dir(dir) when is_direction(dir), do: :ok
   defp validate_dir(_), do: {:error, "invalid direction"}
@@ -73,6 +72,7 @@ defmodule RobotSimulator do
     case Regex.match?(~r/[^RLA]/, instructions) do
       true ->
         {:error, "invalid instruction"}
+
       false ->
         instructions |> String.graphemes() |> Enum.reduce(robot, &handle(&1, &2))
     end
@@ -88,6 +88,7 @@ defmodule RobotSimulator do
       {x, y}, :south -> {x, y - 1}
       {x, y}, :west -> {x - 1, y}
     end
+
     %{robot | position: advance.(robot.position, robot.direction)}
   end
 

@@ -414,7 +414,7 @@ In this example, both functions are in the same module, so you do not need to sp
 #### _Declaring an anonymous function_
 
 ```elixir
-add_one = &(1 + 1)
+add_one = &(&1 + 1)
 add_one.(1) # 2
 ```
 

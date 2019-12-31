@@ -7,7 +7,7 @@ defmodule ListOps do
 
   @spec count(list) :: non_neg_integer
   def count(l) do
-    l |> reduce(0,fn (_, acc) -> acc + 1 end)
+    l |> reduce(0, fn (_, acc) -> acc + 1 end)
   end
 
   @spec reverse(list) :: list
@@ -42,6 +42,6 @@ defmodule ListOps do
   @spec concat([[any]]) :: [any]
   def concat(ll) do
     ll |> reverse
-    |> reduce([], &append(&1, &2))
+    |> reduce([], &append/2)
   end
 end

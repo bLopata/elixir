@@ -7,31 +7,41 @@ defmodule ListOps do
 
   @spec count(list) :: non_neg_integer
   def count(l) do
-    l |> Enum.count()
+    l |> reduce(0, &(&1 + &2 + 1 - &1))
   end
 
   @spec reverse(list) :: list
   def reverse(l) do
+    l |> reduce([], &[&1 | &2])
   end
 
   @spec map(list, (any -> any)) :: list
   def map(l, f) do
+    l |> reduce([], &[f.(&1) | &2]) |> reverse
   end
 
   @spec filter(list, (any -> as_boolean(term))) :: list
   def filter(l, f) do
+    l |> reduce([], &( if f.(&1), do: [&1 | &2], else: &2 ))
+    |> reverse
   end
 
   @type acc :: any
   @spec reduce(list, acc, (any, acc -> acc)) :: acc
-  def reduce(l, acc, f) do
+  def reduce([], acc, _), do: acc
+  def reduce([head | tail], acc, f) do
+    reduce(tail, f.(head, acc), f)
   end
 
   @spec append(list, list) :: list
   def append(a, b) do
+    a |> reverse
+    |> reduce(b, &[&1 | &2])
   end
 
   @spec concat([[any]]) :: [any]
   def concat(ll) do
+    ll |> reverse
+    |> reduce([], &append(&1, &2))
   end
 end

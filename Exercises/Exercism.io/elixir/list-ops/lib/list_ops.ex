@@ -7,7 +7,7 @@ defmodule ListOps do
 
   @spec count(list) :: non_neg_integer
   def count(l) do
-    l |> reduce(0, &(&1 + &2 + 1 - &1))
+    l |> reduce(0,fn (_, acc) -> acc + 1 end)
   end
 
   @spec reverse(list) :: list

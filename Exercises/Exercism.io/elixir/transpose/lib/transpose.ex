@@ -18,5 +18,9 @@ defmodule Transpose do
 
   @spec transpose(String.t()) :: String.t()
   def transpose(input) do
+    input |> String.split("\n")
+    |> Enum.map(fn x -> String.split(x, "", trim: true) end)
+    |> Enum.zip()
+    |> Enum.map(fn x -> Tuple.to_list(x) end)
   end
 end

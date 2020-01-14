@@ -18,9 +18,20 @@ defmodule Transpose do
 
   @spec transpose(String.t()) :: String.t()
   def transpose(input) do
-    input |> String.split("\n")
-    |> Enum.map(fn x -> String.split(x, "", trim: true) end)
+    input
+    |> String.split("\n")
+    |> pad_length()
+    |> Enum.map(&String.graphemes/1)
     |> Enum.zip()
-    |> Enum.map(fn x -> Tuple.to_list(x) end)
+    |> Enum.map(&Tuple.to_list/1)
+    |> Enum.join("\n")
+    |> String.trim
+  end
+
+  defp pad_length(list) do
+    max_chars = Enum.max_by(list, &String.length/1)
+      |> String.length
+
+    list |> Enum.map(&String.pad_trailing(&1, max_chars))
   end
 end
